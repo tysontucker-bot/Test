@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IEP Learning Activities</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===================== SCREEN: Student Selection ===================== -->
+  <div id="screen-student" class="screen active">
+    <div class="screen-header center-header">
+      <div class="app-logo">🎓</div>
+      <h1 class="app-title">IEP Learning Activities</h1>
+      <p class="app-subtitle">Who's learning today? 🌟</p>
+    </div>
+    <div id="student-grid" class="student-grid"></div>
+    <div class="bottom-bar">
+      <button id="btn-session-history" class="btn-ghost" aria-label="View session history">
+        📋 Session History
+      </button>
+      <button id="btn-open-settings-home" class="btn-ghost" aria-label="Open settings">
+        ⚙️ Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== SCREEN: Subject Selection ===================== -->
+  <div id="screen-subject" class="screen">
+    <div class="screen-header">
+      <button class="btn-back" id="back-to-students" aria-label="Back to student selection">← Back</button>
+      <div class="header-title">
+        <span id="subject-student-badge" class="student-badge"></span>
+        <h1>Pick a Subject</h1>
+      </div>
+    </div>
+    <div id="subject-grid" class="subject-grid"></div>
+  </div>
+
+  <!-- ===================== SCREEN: Activity Selection ===================== -->
+  <div id="screen-activity" class="screen">
+    <div class="screen-header">
+      <button class="btn-back" id="back-to-subjects" aria-label="Back to subject selection">← Back</button>
+      <div class="header-title">
+        <h1 id="activity-screen-title">Choose an Activity</h1>
+      </div>
+    </div>
+    <div id="activity-list" class="activity-list"></div>
+  </div>
+
+  <!-- ===================== SCREEN: Game ===================== -->
+  <div id="screen-game" class="screen">
+    <div class="game-topbar">
+      <button class="btn-back" id="back-to-activities" aria-label="Back to activity list">← Back</button>
+      <div class="game-info-bar">
+        <span id="game-title-display" class="game-title-display"></span>
+        <span id="game-score-display" class="game-score-display"></span>
+      </div>
+      <div class="game-controls">
+        <button id="btn-edit-activity" class="btn-icon-sm" aria-label="Edit this activity" title="Edit Activity">✏️</button>
+        <button id="btn-open-settings-game" class="btn-icon-sm" aria-label="Open settings" title="Settings">⚙️</button>
+      </div>
+    </div>
+
+    <div id="progress-dots" class="progress-dots" aria-label="Question progress" role="progressbar"></div>
+
+    <div id="game-content" class="game-content">
+      <div id="prompt-card" class="prompt-card"></div>
+      <div id="choices-container" class="choices-container">
+        <div id="choices-grid" class="choices-grid"></div>
+      </div>
+    </div>
+
+    <div id="feedback-overlay" class="feedback-overlay hidden" role="status" aria-live="polite">
+      <div id="feedback-message" class="feedback-message"></div>
+    </div>
+  </div>
+
+  <!-- ===================== SCREEN: Completion ===================== -->
+  <div id="screen-completion" class="screen">
+    <div class="completion-wrapper">
+      <div class="completion-card">
+        <div class="completion-icon" id="completion-icon">🏆</div>
+        <h1 id="completion-heading" class="completion-heading"></h1>
+        <div id="completion-score-display" class="completion-score-display"></div>
+        <div id="completion-stat-row" class="completion-stat-row"></div>
+        <div class="completion-actions">
+          <button id="btn-play-again" class="btn-primary btn-large">🔄 Play Again</button>
+          <button id="btn-choose-another" class="btn-secondary btn-large">📚 New Activity</button>
+          <button id="btn-go-home" class="btn-ghost btn-large">🏠 Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Settings ===================== -->
+  <div id="modal-settings" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="settings-title">⚙️ Settings</h2>
+        <button class="btn-close-modal" id="close-settings" aria-label="Close settings">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <section class="settings-section">
+          <h3>💬 Messages</h3>
+          <label class="settings-label">Encouragement Text
+            <input type="text" id="set-encourage" class="settings-input" placeholder="Great job! 🎉">
+          </label>
+          <label class="settings-label">Try Again Text
+            <input type="text" id="set-tryagain" class="settings-input" placeholder="Try again! 💪">
+          </label>
+          <label class="settings-label">Completion Text
+            <input type="text" id="set-completion" class="settings-input" placeholder="You did it! 🌟">
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h3>🎨 Colors</h3>
+          <label class="settings-label settings-color-row">Background Color
+            <input type="color" id="set-bg-color" class="settings-color">
+          </label>
+          <label class="settings-label settings-color-row">Card / Surface Color
+            <input type="color" id="set-surface-color" class="settings-color">
+          </label>
+          <label class="settings-label settings-color-row">Text Color
+            <input type="color" id="set-text-color" class="settings-color">
+          </label>
+          <label class="settings-label settings-color-row">Primary Action Color
+            <input type="color" id="set-primary-color" class="settings-color">
+          </label>
+          <label class="settings-label settings-color-row">Secondary / Muted Color
+            <input type="color" id="set-secondary-color" class="settings-color">
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h3>🔤 Typography</h3>
+          <label class="settings-label">Font Family
+            <select id="set-font-family" class="settings-input">
+              <option value="'Segoe UI', system-ui, sans-serif">Segoe UI (Default)</option>
+              <option value="'Comic Sans MS', 'Chalkboard SE', cursive">Comic Sans MS</option>
+              <option value="'Arial Rounded MT Bold', Arial, sans-serif">Arial Rounded</option>
+              <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+              <option value="'Courier New', Courier, monospace">Monospace</option>
+            </select>
+          </label>
+          <label class="settings-label">Base Font Size
+            <select id="set-font-size" class="settings-input">
+              <option value="14px">Small (14px)</option>
+              <option value="16px">Medium (16px)</option>
+              <option value="18px">Large (18px)</option>
+              <option value="20px">Extra Large (20px)</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="settings-section">
+          <h3>🪙 Coin Images (optional)</h3>
+          <p class="settings-hint">Provide image URLs to replace default coin emojis. Leave blank to use emoji.</p>
+          <label class="settings-label">Penny (1¢)
+            <input type="url" id="set-coin-penny" class="settings-input" placeholder="https://...">
+          </label>
+          <label class="settings-label">Nickel (5¢)
+            <input type="url" id="set-coin-nickel" class="settings-input" placeholder="https://...">
+          </label>
+          <label class="settings-label">Dime (10¢)
+            <input type="url" id="set-coin-dime" class="settings-input" placeholder="https://...">
+          </label>
+          <label class="settings-label">Quarter (25¢)
+            <input type="url" id="set-coin-quarter" class="settings-input" placeholder="https://...">
+          </label>
+        </section>
+
+      </div>
+      <div class="modal-footer">
+        <button id="btn-save-settings" class="btn-primary">💾 Save</button>
+        <button id="btn-reset-settings" class="btn-secondary">↩ Defaults</button>
+        <button id="btn-cancel-settings" class="btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Activity Editor ===================== -->
+  <div id="modal-editor" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <div class="modal-panel modal-wide">
+      <div class="modal-header">
+        <h2 id="editor-title">✏️ Edit Activity</h2>
+        <button class="btn-close-modal" id="close-editor" aria-label="Close editor">✕</button>
+      </div>
+      <div class="modal-body" id="editor-body">
+        <!-- Populated by JS -->
+      </div>
+      <div class="modal-footer">
+        <button id="btn-save-editor" class="btn-primary">💾 Save Changes</button>
+        <button id="btn-cancel-editor" class="btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: Session History ===================== -->
+  <div id="modal-history" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="history-title">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="history-title">📋 Session History</h2>
+        <button class="btn-close-modal" id="close-history" aria-label="Close history">✕</button>
+      </div>
+      <div class="modal-body" id="history-body">
+        <!-- Populated by JS -->
+      </div>
+      <div class="modal-footer">
+        <button id="btn-clear-history" class="btn-secondary">🗑️ Clear History</button>
+        <button id="btn-close-history-footer" class="btn-ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
