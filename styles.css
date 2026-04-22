@@ -425,6 +425,12 @@ input, select, textarea { font-family: inherit; font-size: inherit; }
   object-fit: contain;
   border-radius: 50%;
 }
+.coin-svg {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: block;
+}
 
 /* ---- Choices Container & Grid ---- */
 .choices-container { flex: 1; overflow: hidden; }

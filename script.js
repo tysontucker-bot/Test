@@ -861,11 +861,83 @@ function renderFinnleyQ(q, promptCard, choicesGrid) {
   });
 }
 
+/* --- COIN-VALUE: generate a styled SVG graphic for a coin --- */
+function createCoinSvg(coinKey) {
+  const configs = {
+    penny:   { light: '#e8a055', dark: '#8b4513', stroke: '#7a3005', text: '#fff5e0', sub: 'ONE CENT'       },
+    nickel:  { light: '#e2e4e8', dark: '#888c96', stroke: '#70747c', text: '#1a1c20', sub: 'FIVE CENTS'     },
+    dime:    { light: '#e2e4e8', dark: '#888c96', stroke: '#70747c', text: '#1a1c20', sub: 'TEN CENTS'      },
+    quarter: { light: '#e2e4e8', dark: '#888c96', stroke: '#70747c', text: '#1a1c20', sub: 'QUARTER DOLLAR' },
+  };
+  const c = configs[coinKey] || configs.quarter;
+  const info = COIN_INFO[coinKey] || { label: 'Coin', value: '?' };
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('width', '110');
+  svg.setAttribute('height', '110');
+  svg.setAttribute('aria-label', info.label);
+  svg.classList.add('coin-svg');
+
+  const defs = document.createElementNS(ns, 'defs');
+  const gid = 'coin-grad-' + coinKey;
+  const grad = document.createElementNS(ns, 'radialGradient');
+  grad.setAttribute('id', gid);
+  grad.setAttribute('cx', '38%'); grad.setAttribute('cy', '32%'); grad.setAttribute('r', '65%');
+  const s1 = document.createElementNS(ns, 'stop');
+  s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', c.light);
+  const s2 = document.createElementNS(ns, 'stop');
+  s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', c.dark);
+  grad.append(s1, s2);
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  const outer = document.createElementNS(ns, 'circle');
+  outer.setAttribute('cx', '50'); outer.setAttribute('cy', '50'); outer.setAttribute('r', '48');
+  outer.setAttribute('fill', `url(#${gid})`);
+  outer.setAttribute('stroke', c.stroke); outer.setAttribute('stroke-width', '2');
+  svg.appendChild(outer);
+
+  const inner = document.createElementNS(ns, 'circle');
+  inner.setAttribute('cx', '50'); inner.setAttribute('cy', '50'); inner.setAttribute('r', '42');
+  inner.setAttribute('fill', 'none');
+  inner.setAttribute('stroke', c.stroke); inner.setAttribute('stroke-width', '0.8');
+  svg.appendChild(inner);
+
+  const portrait = document.createElementNS(ns, 'circle');
+  portrait.setAttribute('cx', '50'); portrait.setAttribute('cy', '40'); portrait.setAttribute('r', '13');
+  portrait.setAttribute('fill', 'none');
+  portrait.setAttribute('stroke', c.stroke); portrait.setAttribute('stroke-width', '0.8');
+  portrait.setAttribute('opacity', '0.5');
+  svg.appendChild(portrait);
+
+  const valText = document.createElementNS(ns, 'text');
+  valText.setAttribute('x', '50'); valText.setAttribute('y', '68');
+  valText.setAttribute('text-anchor', 'middle');
+  valText.setAttribute('font-family', 'Georgia, serif');
+  valText.setAttribute('font-size', '16'); valText.setAttribute('font-weight', 'bold');
+  valText.setAttribute('fill', c.text);
+  valText.textContent = info.value;
+  svg.appendChild(valText);
+
+  const subText = document.createElementNS(ns, 'text');
+  subText.setAttribute('x', '50'); subText.setAttribute('y', '81');
+  subText.setAttribute('text-anchor', 'middle');
+  subText.setAttribute('font-family', 'Georgia, serif');
+  subText.setAttribute('font-size', '8'); subText.setAttribute('font-weight', 'bold');
+  subText.setAttribute('fill', c.text);
+  subText.textContent = c.sub;
+  svg.appendChild(subText);
+
+  return svg;
+}
+
 /* --- COIN-VALUE: show coin, answer name or value --- */
 function renderCoinValueQ(q, promptCard, choicesGrid) {
   const wrap = el('div', 'coin-display-wrap');
 
-  // Coin visual: prefer custom image, fall back to emoji
+  // Coin visual: prefer custom image URL, fall back to SVG coin graphic
   const coinKey = q.coin;
   const settingsKey = 'coin' + (coinKey.charAt(0).toUpperCase() + coinKey.slice(1));
   const imageUrl = settings[settingsKey];
@@ -877,11 +949,11 @@ function renderCoinValueQ(q, promptCard, choicesGrid) {
     img.alt = info.label;
     img.className = 'coin-image';
     img.onerror = function () {
-      this.replaceWith(el('span', 'coin-emoji-big', info.altEmoji));
+      this.replaceWith(createCoinSvg(coinKey));
     };
     wrap.appendChild(img);
   } else {
-    wrap.appendChild(el('span', 'coin-emoji-big', info.altEmoji));
+    wrap.appendChild(createCoinSvg(coinKey));
   }
 
   const badge = el('span', 'coin-label-badge', info.label);
